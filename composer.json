@@ -1,0 +1,54 @@
+{
+    "name"       : "narrowspark/homeland",
+    "type"       : "library",
+    "description": "Pre-packaged Docker box that provides you a wonderful development environment.",
+    "keywords"   : [
+        "narrowspark",
+        "homeland",
+        "docker"
+    ],
+    "license"    : "MIT",
+    "homepage"   : "https://github.com/narrowspark/homeland",
+    "support"    : {
+        "issues": "https://github.com/narrowspark/homeland/issues",
+        "source": "https://github.com/narrowspark/homeland"
+    },
+    "authors"    : [
+        {
+            "name"    : "Daniel Bannert",
+            "email"   : "d.bannert@anolilab.de",
+            "homepage": "http://www.anolilab.de",
+            "role"    : "Developer"
+        }
+    ],
+    "bin": [
+        "bin/homeland"
+    ],
+    "require": {
+        "php"                             : "^7.2",
+        "symfony/console"                 : "~4.0",
+        "symfony/filesystem"              : "~4.0",
+        "symfony/options-resolver"        : "~4.0",
+        "twig/twig"                       : "^2.4.4"
+    },
+    "require-dev": {
+        "narrowspark/php-cs-fixer-config" : "^2.1",
+        "phpunit/phpunit"                 : "~6.5",
+        "phpstan/phpstan"                 : "^0.9",
+        "phpstan/phpstan-phpunit"         : "^0.9",
+        "symfony/yaml"                    : "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Narrowspark\\Homeland\\"     : "src/"
+        }
+    },
+    "scripts": {
+        "cs"                              : "php-cs-fixer fix",
+        "test"                            : "phpunit",
+        "coverage"                        : "phpunit --coverage-html=\"build/logs\"",
+        "phpstan"                         : "phpstan analyse -c phpstan.neon -l 7 src --memory-limit=-1"
+    },
+    "minimum-stability"                   : "dev",
+    "prefer-stable"                       : true
+}
