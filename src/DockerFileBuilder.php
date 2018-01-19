@@ -37,7 +37,7 @@ final class DockerFileBuilder
     private $directory = '/';
 
     /**
-     * @var string|array
+     * @var array|string
      */
     private $shell;
 
@@ -52,27 +52,43 @@ final class DockerFileBuilder
     private $stopsignal;
 
     /**
+     * @var null|string
+     */
+    private $arg;
+
+    /**
      * Create a new DockerFileBuilder instance.
      *
-     * @param string $from Set the FROM instruction of Dockerfile
+     * @param string $from set the FROM instruction of Dockerfile
+     * @param string $arg  instruction defines a variable that users can pass at build-time
      */
-    public function __construct(string $from)
+    public function __construct(string $from, string $arg = null)
     {
         $this->from = $from;
+        $this->arg  = $arg;
     }
 
     /**
-     * Set output folder path of the dockerfile.
+     * Generated a file in a directory.
      *
-     * @param string $directory
+     * @param string $directory Targeted directory
+     * @param string $content   Content of file
      *
-     * @return \Narrowspark\Homeland\DockerFileBuilder
+     * @return string Name of file generated
      */
-    public function setOutputPath(string $directory): self
+    public static function generateFile(string $directory, string $content): string
     {
-        $this->directory = $directory;
+        $hash = \sha1($content);
 
-        return $this;
+        if (! \array_key_exists($hash, self::$files)) {
+            $file = \tempnam($directory, '');
+
+            \file_put_contents($file, $content);
+
+            self::$files[$hash] = \basename($file);
+        }
+
+        return self::$files[$hash];
     }
 
     /**
@@ -106,14 +122,14 @@ final class DockerFileBuilder
     /**
      * Add a ADD instruction to Dockerfile.
      *
-     * @param string $path    Path wanted on the image
-     * @param string $content Path of the file
+     * @param string $src  Path of the file
+     * @param string $dest Path wanted on the image
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function add(string $path, string $content): self
+    public function add(string $src, string $dest): self
     {
-        $this->commands[] = ['type' => 'ADD', 'path' => $path, 'content' => $content];
+        $this->commands[] = ['type' => 'ADD', 'src' => $src, 'dest' => $dest];
 
         return $this;
     }
@@ -247,9 +263,23 @@ final class DockerFileBuilder
     }
 
     /**
+     * Adds a LABEL instruction to the Dockerfile.
+     *
+     * @param string $label
+     *
+     * @return \Narrowspark\Homeland\DockerFileBuilder
+     */
+    public function label(string $label): self
+    {
+        $this->commands[] = ['type' => 'LABEL', 'label' => $label];
+
+        return $this;
+    }
+
+    /**
      * Adds a SHELL instruction to the Dockerfile.
      *
-     * @param string|array $commands
+     * @param array|string $commands
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
@@ -298,16 +328,25 @@ final class DockerFileBuilder
     public function render(): string
     {
         $dockerfile   = [];
+
+        if ($this->arg !== null) {
+            $dockerfile[] = 'ARG ' . $this->arg;
+        }
+
         $dockerfile[] = 'FROM ' . $this->from;
 
         foreach ($this->commands as $command) {
             switch ($command['type']) {
+                case 'ARG':
+                    $dockerfile[] = 'ARG ' . $command['argument'];
+
+                    break;
                 case 'RUN':
                     $dockerfile[] = 'RUN ' . $command['command'];
 
                     break;
                 case 'ADD':
-                    $dockerfile[] = 'ADD ' . $this->getFile($this->directory, $command['content']) . ' ' . $command['path'];
+                    $dockerfile[] = 'ADD ' . $command['src'] . ' ' . $command['dest'];
 
                     break;
                 case 'COPY':
@@ -338,8 +377,8 @@ final class DockerFileBuilder
                     $dockerfile[] = 'ONBUILD ' . $command['command'];
 
                     break;
-                case 'ARG':
-                    $dockerfile[] = 'ARG ' . $command['argument'];
+                case 'LABEL':
+                    $dockerfile[] = 'LABEL ' . $command['label'];
 
                     break;
             }
@@ -366,28 +405,5 @@ final class DockerFileBuilder
         }
 
         return \implode(PHP_EOL, $dockerfile);
-    }
-
-    /**
-     * Generated a file in a directory.
-     *
-     * @param string $directory Targeted directory
-     * @param string $content   Content of file
-     *
-     * @return string Name of file generated
-     */
-    private function getFile(string $directory, string $content): string
-    {
-        $hash = \sha1($content);
-
-        if (! \array_key_exists($hash, $this->files)) {
-            $file = \tempnam($directory, '');
-
-            \file_put_contents($file, $content);
-
-            $this->files[$hash] = \basename($file);
-        }
-
-        return $this->files[$hash];
     }
 }
