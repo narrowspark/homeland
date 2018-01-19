@@ -7,7 +7,7 @@ final class DockerFileBuilder
     /**
      * @var string
      */
-    private $from = 'base';
+    private $from;
 
     /**
      * @var array
@@ -34,7 +34,32 @@ final class DockerFileBuilder
      *
      * @var string
      */
-    private $directory;
+    private $directory = '/';
+
+    /**
+     * @var string|array
+     */
+    private $shell;
+
+    /**
+     * @var string
+     */
+    private $healthcheck;
+
+    /**
+     * @var string
+     */
+    private $stopsignal;
+
+    /**
+     * Create a new DockerFileBuilder instance.
+     *
+     * @param string $from Set the FROM instruction of Dockerfile
+     */
+    public function __construct(string $from)
+    {
+        $this->from = $from;
+    }
 
     /**
      * Set output folder path of the dockerfile.
@@ -46,20 +71,6 @@ final class DockerFileBuilder
     public function setOutputPath(string $directory): self
     {
         $this->directory = $directory;
-
-        return $this;
-    }
-
-    /**
-     * Set the FROM instruction of Dockerfile.
-     *
-     * @param string $from From which image we start
-     *
-     * @return \Narrowspark\Homeland\DockerFileBuilder
-     */
-    public function from(string $from): self
-    {
-        $this->from = $from;
 
         return $this;
     }
@@ -208,7 +219,79 @@ final class DockerFileBuilder
     }
 
     /**
+     * Adds a ONBUILD instruction to the Dockerfile.
+     *
+     * @param string $command
+     *
+     * @return \Narrowspark\Homeland\DockerFileBuilder
+     */
+    public function onbuild(string $command): self
+    {
+        $this->commands[] = ['type' => 'ONBUILD', 'command' => $command];
+
+        return $this;
+    }
+
+    /**
+     * Adds a ARG instruction to the Dockerfile.
+     *
+     * @param string $argument
+     *
+     * @return \Narrowspark\Homeland\DockerFileBuilder
+     */
+    public function arg(string $argument): self
+    {
+        $this->commands[] = ['type' => 'ARG', 'argument' => $argument];
+
+        return $this;
+    }
+
+    /**
+     * Adds a SHELL instruction to the Dockerfile.
+     *
+     * @param string|array $commands
+     *
+     * @return \Narrowspark\Homeland\DockerFileBuilder
+     */
+    public function shell($commands): self
+    {
+        $this->shell = $commands;
+
+        return $this;
+    }
+
+    /**
+     * Adds a HEALTHCHECK instruction to the Dockerfile.
+     *
+     * @param string $command
+     *
+     * @return \Narrowspark\Homeland\DockerFileBuilder
+     */
+    public function healthcheck(string $command): self
+    {
+        $this->healthcheck = $command;
+
+        return $this;
+    }
+
+    /**
+     * Adds a STOPSIGNAL instruction to the Dockerfile.
+     *
+     * @param string $command
+     *
+     * @return \Narrowspark\Homeland\DockerFileBuilder
+     */
+    public function stopsignal(string $command): self
+    {
+        $this->stopsignal = $command;
+
+        return $this;
+    }
+
+    /**
      * Render docker file.
+     *
+     * @throws \RuntimeException
      *
      * @return string
      */
@@ -251,7 +334,27 @@ final class DockerFileBuilder
                     $dockerfile[] = 'USER ' . $command['user'];
 
                     break;
+                case 'ONBUILD':
+                    $dockerfile[] = 'ONBUILD ' . $command['command'];
+
+                    break;
+                case 'ARG':
+                    $dockerfile[] = 'ARG ' . $command['argument'];
+
+                    break;
             }
+        }
+
+        if (! empty($this->STOPSIGNAL)) {
+            $dockerfile[] = 'STOPSIGNAL ' . $this->stopsignal;
+        }
+
+        if (! empty($this->healthcheck)) {
+            $dockerfile[] = 'HEALTHCHECK ' . $this->healthcheck;
+        }
+
+        if (! empty($this->shell)) {
+            $dockerfile[] = 'SHELL ' . $this->shell;
         }
 
         if (! empty($this->entrypoint)) {
@@ -262,7 +365,7 @@ final class DockerFileBuilder
             $dockerfile[] = 'CMD ' . $this->command;
         }
 
-        return implode(PHP_EOL, $dockerfile);
+        return \implode(PHP_EOL, $dockerfile);
     }
 
     /**

@@ -25,30 +25,35 @@
         "bin/homeland"
     ],
     "require": {
-        "php"                             : "^7.2",
-        "symfony/console"                 : "~4.0",
-        "symfony/filesystem"              : "~4.0",
-        "symfony/options-resolver"        : "~4.0",
-        "twig/twig"                       : "^2.4.4"
+        "php"                                : "^7.2",
+        "symfony/console"                    : "~4.0",
+        "symfony/filesystem"                 : "~4.0",
+        "symfony/options-resolver"           : "~4.0",
+        "twig/twig"                          : "^2.4.4"
     },
     "require-dev": {
-        "narrowspark/php-cs-fixer-config" : "^2.1",
-        "phpunit/phpunit"                 : "~6.5",
-        "phpstan/phpstan"                 : "^0.9",
-        "phpstan/phpstan-phpunit"         : "^0.9",
-        "symfony/yaml"                    : "^4.0"
+        "narrowspark/php-cs-fixer-config"    : "^2.1",
+        "phpunit/phpunit"                    : "~6.5",
+        "phpstan/phpstan"                    : "^0.9",
+        "phpstan/phpstan-phpunit"            : "^0.9",
+        "symfony/yaml"                       : "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "Narrowspark\\Homeland\\"     : "src/"
+            "Narrowspark\\Homeland\\"        : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Narrowspark\\Homeland\\Tests\\" : "tests"
         }
     },
     "scripts": {
-        "cs"                              : "php-cs-fixer fix",
-        "test"                            : "phpunit",
-        "coverage"                        : "phpunit --coverage-html=\"build/logs\"",
-        "phpstan"                         : "phpstan analyse -c phpstan.neon -l 7 src --memory-limit=-1"
+        "cs"                                 : "php-cs-fixer fix",
+        "test"                               : "phpunit",
+        "coverage"                           : "phpunit --coverage-html=\"build/logs\"",
+        "phpstan"                            : "phpstan analyse -c phpstan.neon -l 7 src --memory-limit=-1"
     },
-    "minimum-stability"                   : "dev",
-    "prefer-stable"                       : true
+    "minimum-stability"                      : "dev",
+    "prefer-stable"                          : true
 }
