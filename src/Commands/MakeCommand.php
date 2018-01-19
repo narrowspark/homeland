@@ -6,5 +6,4 @@ use Symfony\Component\Console\Command\Command;
 
 class MakeCommand extends Command
 {
-
 }

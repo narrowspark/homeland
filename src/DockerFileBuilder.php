@@ -2,47 +2,62 @@
 declare(strict_types=1);
 namespace Narrowspark\Homeland;
 
-class DockerFileBuilder
+final class DockerFileBuilder
 {
-
     /**
      * @var string
      */
     private $from = 'base';
-
 
     /**
      * @var array
      */
     private $commands = [];
 
-
     /**
      * @var array
      */
     private $files = [];
-
 
     /**
      * @var string
      */
     private $command;
 
-
     /**
      * @var string
      */
     private $entrypoint;
 
+    /**
+     * Dockerfile output folder.
+     *
+     * @var string
+     */
+    private $directory;
 
     /**
-     * Set the FROM instruction of Dockerfile
+     * Set output folder path of the dockerfile.
+     *
+     * @param string $directory
+     *
+     * @return \Narrowspark\Homeland\DockerFileBuilder
+     */
+    public function setOutputPath(string $directory): self
+    {
+        $this->directory = $directory;
+
+        return $this;
+    }
+
+    /**
+     * Set the FROM instruction of Dockerfile.
      *
      * @param string $from From which image we start
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function from($from)
+    public function from(string $from): self
     {
         $this->from = $from;
 
@@ -50,13 +65,13 @@ class DockerFileBuilder
     }
 
     /**
-     * Set the CMD instruction in the Dockerfile
+     * Set the CMD instruction in the Dockerfile.
      *
      * @param string $command Command to execute
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function command($command)
+    public function command(string $command): self
     {
         $this->command = $command;
 
@@ -64,13 +79,13 @@ class DockerFileBuilder
     }
 
     /**
-     * Set the ENTRYPOINT instruction in the Dockerfile
+     * Set the ENTRYPOINT instruction in the Dockerfile.
      *
      * @param string $entrypoint The entrypoint
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function entrypoint($entrypoint)
+    public function entrypoint(string $entrypoint): self
     {
         $this->entrypoint = $entrypoint;
 
@@ -78,14 +93,14 @@ class DockerFileBuilder
     }
 
     /**
-     * Add a ADD instruction to Dockerfile
+     * Add a ADD instruction to Dockerfile.
      *
      * @param string $path    Path wanted on the image
-     * @param string $content Content of file
+     * @param string $content Path of the file
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function add($path, $content)
+    public function add(string $path, string $content): self
     {
         $this->commands[] = ['type' => 'ADD', 'path' => $path, 'content' => $content];
 
@@ -93,13 +108,13 @@ class DockerFileBuilder
     }
 
     /**
-     * Add a RUN instruction to Dockerfile
+     * Add a RUN instruction to Dockerfile.
      *
      * @param string $command Command to run
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function run($command)
+    public function run(string $command): self
     {
         $this->commands[] = ['type' => 'RUN', 'command' => $command];
 
@@ -107,14 +122,14 @@ class DockerFileBuilder
     }
 
     /**
-     * Add a ENV instruction to Dockerfile
+     * Add a ENV instruction to Dockerfile.
      *
-     * @param string $name Name of the environment variable
+     * @param string $name  Name of the environment variable
      * @param string $value Value of the environment variable
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function env($name, $value)
+    public function env(string $name, string $value): self
     {
         $this->commands[] = ['type' => 'ENV', 'name' => $name, 'value' => $value];
 
@@ -122,14 +137,14 @@ class DockerFileBuilder
     }
 
     /**
-     * Add a COPY instruction to Dockerfile
+     * Add a COPY instruction to Dockerfile.
      *
      * @param string $from Path of folder or file to copy
-     * @param string $to Path of destination
+     * @param string $to   Path of destination
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function copy($from, $to)
+    public function copy(string $from, string $to): self
     {
         $this->commands[] = ['type' => 'COPY', 'from' => $from, 'to' => $to];
 
@@ -137,13 +152,13 @@ class DockerFileBuilder
     }
 
     /**
-     * Add a WORKDIR instruction to Dockerfile
+     * Add a WORKDIR instruction to Dockerfile.
      *
      * @param string $workdir Working directory
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function workdir($workdir)
+    public function workdir(string $workdir): self
     {
         $this->commands[] = ['type' => 'WORKDIR', 'workdir' => $workdir];
 
@@ -151,13 +166,13 @@ class DockerFileBuilder
     }
 
     /**
-     * Add a EXPOSE instruction to Dockerfile
+     * Add a EXPOSE instruction to Dockerfile.
      *
      * @param int $port Port to expose
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function expose($port)
+    public function expose(int $port): self
     {
         $this->commands[] = ['type' => 'EXPOSE', 'port' => $port];
 
@@ -165,13 +180,13 @@ class DockerFileBuilder
     }
 
     /**
-     * Adds an USER instruction to the Dockerfile
+     * Adds an USER instruction to the Dockerfile.
      *
      * @param string $user User to switch to
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function user($user)
+    public function user(string $user): self
     {
         $this->commands[] = ['type' => 'USER', 'user' => $user];
 
@@ -179,13 +194,13 @@ class DockerFileBuilder
     }
 
     /**
-     * Adds a VOLUME instruction to the Dockerfile
+     * Adds a VOLUME instruction to the Dockerfile.
      *
      * @param string $volume Volume path to add
      *
      * @return \Narrowspark\Homeland\DockerFileBuilder
      */
-    public function volume($volume)
+    public function volume(string $volume): self
     {
         $this->commands[] = ['type' => 'VOLUME', 'volume' => $volume];
 
@@ -199,43 +214,51 @@ class DockerFileBuilder
      */
     public function render(): string
     {
-        $dockerfile = [];
-        $dockerfile[] = 'FROM '.$this->from;
+        $dockerfile   = [];
+        $dockerfile[] = 'FROM ' . $this->from;
 
         foreach ($this->commands as $command) {
             switch ($command['type']) {
                 case 'RUN':
-                    $dockerfile[] = 'RUN '.$command['command'];
+                    $dockerfile[] = 'RUN ' . $command['command'];
+
                     break;
                 case 'ADD':
-                    $dockerfile[] = 'ADD '.$this->getFile($this->directory, $command['content']).' '.$command['path'];
+                    $dockerfile[] = 'ADD ' . $this->getFile($this->directory, $command['content']) . ' ' . $command['path'];
+
                     break;
                 case 'COPY':
-                    $dockerfile[] = 'COPY '.$command['from'].' '.$command['to'];
+                    $dockerfile[] = 'COPY ' . $command['from'] . ' ' . $command['to'];
+
                     break;
                 case 'ENV':
-                    $dockerfile[] = 'ENV '.$command['name'].' '.$command['value'];
+                    $dockerfile[] = 'ENV ' . $command['name'] . ' ' . $command['value'];
+
                     break;
                 case 'WORKDIR':
-                    $dockerfile[] = 'WORKDIR '.$command['workdir'];
+                    $dockerfile[] = 'WORKDIR ' . $command['workdir'];
+
                     break;
                 case 'EXPOSE':
-                    $dockerfile[] = 'EXPOSE '.$command['port'];
+                    $dockerfile[] = 'EXPOSE ' . $command['port'];
+
                     break;
                 case 'VOLUME':
                     $dockerfile[] = 'VOLUME ' . $command['volume'];
+
                     break;
                 case 'USER':
                     $dockerfile[] = 'USER ' . $command['user'];
+
                     break;
             }
         }
 
-        if (!empty($this->entrypoint)) {
+        if (! empty($this->entrypoint)) {
             $dockerfile[] = 'ENTRYPOINT ' . $this->entrypoint;
         }
 
-        if (!empty($this->command)) {
+        if (! empty($this->command)) {
             $dockerfile[] = 'CMD ' . $this->command;
         }
 
@@ -243,7 +266,7 @@ class DockerFileBuilder
     }
 
     /**
-     * Generated a file in a directory
+     * Generated a file in a directory.
      *
      * @param string $directory Targeted directory
      * @param string $content   Content of file
@@ -252,12 +275,14 @@ class DockerFileBuilder
      */
     private function getFile(string $directory, string $content): string
     {
-        $hash = md5($content);
+        $hash = \sha1($content);
 
-        if (!array_key_exists($hash, $this->files)) {
-            $file = tempnam($directory, '');
-            // @TODO dump file
-            $this->files[$hash] = basename($file);
+        if (! \array_key_exists($hash, $this->files)) {
+            $file = \tempnam($directory, '');
+
+            \file_put_contents($file, $content);
+
+            $this->files[$hash] = \basename($file);
         }
 
         return $this->files[$hash];
