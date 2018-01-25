@@ -29,6 +29,7 @@
         "symfony/console"                    : "~4.0",
         "symfony/filesystem"                 : "~4.0",
         "symfony/options-resolver"           : "~4.0",
+        "symfony/process"                    : "^4.0",
         "twig/twig"                          : "^2.4.4"
     },
     "require-dev": {
@@ -53,6 +54,11 @@
         "test"                               : "phpunit",
         "coverage"                           : "phpunit --coverage-html=\"build/logs\"",
         "phpstan"                            : "phpstan analyse -c phpstan.neon -l 7 src --memory-limit=-1"
+    },
+    "config": {
+        "preferred-install"                  : "dist",
+        "sort-packages"                      : true,
+        "optimize-autoloader"                : true
     },
     "minimum-stability"                      : "dev",
     "prefer-stable"                          : true

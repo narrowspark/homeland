@@ -17,7 +17,7 @@ final class DockerFileBuilder
     /**
      * @var array
      */
-    private $files = [];
+    private static $files = [];
 
     /**
      * @var string
@@ -28,13 +28,6 @@ final class DockerFileBuilder
      * @var string
      */
     private $entrypoint;
-
-    /**
-     * Dockerfile output folder.
-     *
-     * @var string
-     */
-    private $directory = '/';
 
     /**
      * @var array|string
@@ -60,7 +53,7 @@ final class DockerFileBuilder
      * Create a new DockerFileBuilder instance.
      *
      * @param string $from set the FROM instruction of Dockerfile
-     * @param string $arg  instruction defines a variable that users can pass at build-time
+     * @param string $arg  defines a ARG variable before the FROM instruction
      */
     public function __construct(string $from, string $arg = null)
     {
