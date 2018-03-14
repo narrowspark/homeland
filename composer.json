@@ -36,8 +36,7 @@
         "narrowspark/php-cs-fixer-config"    : "^2.1",
         "phpunit/phpunit"                    : "~6.5",
         "phpstan/phpstan"                    : "^0.9",
-        "phpstan/phpstan-phpunit"            : "^0.9",
-        "symfony/yaml"                       : "^4.0"
+        "phpstan/phpstan-phpunit"            : "^0.9"
     },
     "autoload": {
         "psr-4": {
