@@ -7,28 +7,29 @@ abstract class AbstractDockerContainer
     /**
      * @var string
      */
-    const PACKAGE_MANAGER_TYPE_APT = 'apt';
+    protected const PACKAGE_MANAGER_TYPE_APT = 'apt';
 
     /**
      * @var string
      */
-    const PACKAGE_MANAGER_TYPE_APTITUDE = 'aptitude';
+    protected const PACKAGE_MANAGER_TYPE_APTITUDE = 'aptitude';
 
     /**
      * @var string
      */
-    const PACKAGE_MANAGER_TYPE_APK = 'apk';
+    protected const PACKAGE_MANAGER_TYPE_APK = 'apk';
 
     /**
      * @var string
      */
-    const DOCKER_MAIN_NETWORK = 'main-network';
+    protected const PACKAGE_MANAGER_TYPE_YUM = 'yum';
 
-    public function __construct()
-    {
-    }
+    /**
+     * @var string
+     */
+    protected const DOCKER_MAIN_NETWORK = 'main-network';
 
-    abstract function getImageName(): string;
+    abstract public function getImageName(): string;
 
     /**
      * @return string
