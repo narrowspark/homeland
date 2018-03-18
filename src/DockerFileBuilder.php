@@ -314,8 +314,6 @@ final class DockerFileBuilder
     /**
      * Render docker file.
      *
-     * @throws \RuntimeException
-     *
      * @return string
      */
     public function render(): string

@@ -5,7 +5,9 @@
     "keywords"   : [
         "narrowspark",
         "homeland",
-        "docker"
+        "docker",
+        "docker-compose",
+        "generator"
     ],
     "license"    : "MIT",
     "homepage"   : "https://github.com/narrowspark/homeland",
@@ -26,7 +28,6 @@
     ],
     "require": {
         "php": "^7.2",
-        "cocur/slugify"                      : "^3.1",
         "symfony/console"                    : "~4.0",
         "symfony/filesystem"                 : "~4.0",
         "symfony/options-resolver"           : "~4.0",

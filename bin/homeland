@@ -3,7 +3,10 @@
 
 require __DIR__.'/../../../autoload.php';
 
+use RedAnt\Console\Helper\SelectHelper;
+
 $app = new Symfony\Component\Console\Application('Narrowspark Homeland', '0.1.0');
+$app->getHelperSet()->set(new SelectHelper(), 'select');
 
 $app->add(new Narrowspark\Homeland\Commands\MakeCommand);
 
