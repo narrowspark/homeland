@@ -28,16 +28,18 @@
     ],
     "require": {
         "php": "^7.2",
-        "symfony/console"                    : "~4.0",
-        "symfony/filesystem"                 : "~4.0",
-        "symfony/options-resolver"           : "~4.0",
-        "symfony/yaml"                       : "^4.0"
+        "composer-plugin-api"                : "^1.0",
+        "ext-mbstring"                       : "*",
+        "symfony/yaml"                       : "^3.0 || ^4.0"
     },
     "require-dev": {
+        "composer/composer"                  : "^1.6",
         "narrowspark/php-cs-fixer-config"    : "^2.1",
         "phpunit/phpunit"                    : "~6.5",
         "phpstan/phpstan"                    : "^0.9",
-        "phpstan/phpstan-phpunit"            : "^0.9"
+        "phpstan/phpstan-phpunit"            : "^0.9",
+        "symfony/console"                    : "~4.0",
+        "symfony/filesystem"                 : "~4.0"
     },
     "autoload": {
         "psr-4": {
